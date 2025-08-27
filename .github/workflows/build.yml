@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          C:/vcpkg/vcpkg.exe install boost-asio:x64-windows boost-system:x64-windows boost-iostreams:x64-windows boost-filesystem:x64-windows boost-variant:x64-windows luajit:x64-windows sqlite3:x64-windows mysql-connector-c:x64-windows
+          C:/vcpkg/vcpkg.exe install boost-asio:x64-windows boost-system:x64-windows boost-iostreams:x64-windows boost-filesystem:x64-windows boost-variant:x64-windows luajit:x64-windows sqlite3:x64-windows libmariadb:x64-windows
 
       - name: Configure CMake
         run: cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -B build
