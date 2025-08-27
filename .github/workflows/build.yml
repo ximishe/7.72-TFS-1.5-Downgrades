@@ -1,41 +1,47 @@
 name: Build TFS 7.72 (Windows)
 
 on:
-  workflow_dispatch:     # ręczne odpalenie z zakładki Actions
-  push:                  # uruchomi się też przy pushu
-    branches: [ main ]
+  workflow_dispatch:
+  push:
+    branches: [ master, main ]
 
 jobs:
   build-windows:
     runs-on: windows-latest
-
     steps:
-      # --- Pobranie repo (Twojego forka) ---
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          repository: nekiro/TFS-1.5-Downgrades
+          ref: 7.72
+          fetch-depth: 1
 
-      # --- Instalacja vcpkg ---
       - name: Install vcpkg
         run: |
           git clone https://github.com/microsoft/vcpkg C:/vcpkg
           cd C:/vcpkg
           bootstrap-vcpkg.bat
 
-      # --- Instalacja zależności ---
       - name: Install dependencies
         run: |
-          C:/vcpkg/vcpkg.exe install boost-asio:x64-windows boost-system:x64-windows boost-iostreams:x64-windows boost-filesystem:x64-windows boost-variant:x64-windows luajit:x64-windows sqlite3:x64-windows libmariadb:x64-windows
+          C:/vcpkg/vcpkg.exe install ^
+            boost-asio:x64-windows ^
+            boost-system:x64-windows ^
+            boost-iostreams:x64-windows ^
+            boost-filesystem:x64-windows ^
+            boost-variant:x64-windows ^
+            cryptopp:x64-windows ^
+            luajit:x64-windows ^
+            sqlite3:x64-windows ^
+            libmariadb:x64-windows
 
-      # --- Konfiguracja CMake ---
       - name: Configure CMake
-        run: cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -B build -S .
+        run: cmake -S . -B build -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
 
-      # --- Budowanie ---
       - name: Build
         run: cmake --build build --config Release
 
-      # --- Upload gotowego exe jako Artifact ---
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: tfs-windows
-          path: build/bin/Release/theforgottenserver.exe
+          path: build/bin/Release/*.exe
