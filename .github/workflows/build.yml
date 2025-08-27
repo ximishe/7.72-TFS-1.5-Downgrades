@@ -8,9 +8,7 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
-
     steps:
-      # Źródło: oryginalny Nekiro, gałąź 7.72 (ma CMakeLists.txt w root)
       - uses: actions/checkout@v4
         with:
           repository: nekiro/TFS-1.5-Downgrades
@@ -36,6 +34,7 @@ jobs:
             luajit:x64-windows `
             sqlite3:x64-windows `
             libmariadb:x64-windows `
+            pugixml:x64-windows `
             fmt:x64-windows `
             spdlog:x64-windows
 
@@ -49,5 +48,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tfs-windows
-          path: build/bin/Release/theforgottenserver.exe
-          # ewentualnie: path: build/bin/Release/*.exe
+          path: build/bin/Release/*.exe
