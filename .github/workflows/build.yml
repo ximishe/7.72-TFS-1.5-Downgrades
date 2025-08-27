@@ -1,34 +1,39 @@
 name: Build TFS 7.72 (Windows)
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [ "7.72" ]
+  workflow_dispatch:     # ręczne odpalenie z zakładki Actions
+  push:                  # uruchomi się też przy pushu
+    branches: [ main ]
 
 jobs:
   build-windows:
     runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: 7.72   # <-- pobieramy branch z CMakeLists.txt
 
+    steps:
+      # --- Pobranie repo (Twojego forka) ---
+      - uses: actions/checkout@v3
+
+      # --- Instalacja vcpkg ---
       - name: Install vcpkg
         run: |
           git clone https://github.com/microsoft/vcpkg C:/vcpkg
           cd C:/vcpkg
           bootstrap-vcpkg.bat
 
+      # --- Instalacja zależności ---
       - name: Install dependencies
         run: |
           C:/vcpkg/vcpkg.exe install boost-asio:x64-windows boost-system:x64-windows boost-iostreams:x64-windows boost-filesystem:x64-windows boost-variant:x64-windows luajit:x64-windows sqlite3:x64-windows libmariadb:x64-windows
 
+      # --- Konfiguracja CMake ---
       - name: Configure CMake
         run: cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -B build -S .
 
+      # --- Budowanie ---
       - name: Build
         run: cmake --build build --config Release
 
+      # --- Upload gotowego exe jako Artifact ---
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
