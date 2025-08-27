@@ -10,6 +10,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: 7.72   # <-- pobieramy branch z CMakeLists.txt
 
       - name: Install vcpkg
         run: |
@@ -22,7 +24,7 @@ jobs:
           C:/vcpkg/vcpkg.exe install boost-asio:x64-windows boost-system:x64-windows boost-iostreams:x64-windows boost-filesystem:x64-windows boost-variant:x64-windows luajit:x64-windows sqlite3:x64-windows libmariadb:x64-windows
 
       - name: Configure CMake
-        run: cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -B build
+        run: cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -B build -S .
 
       - name: Build
         run: cmake --build build --config Release
